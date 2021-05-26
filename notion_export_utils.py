@@ -68,7 +68,7 @@ def remove_zip_file(zip_file):
     global logger
 
     if os.path.isfile(zip_file):
-        logger.info(f"remove zip file: {logger}")
+        logger.info(f"remove zip file: {zip_file}")
         os.remove(zip_file)
     else:
         logger.warning(f"not file type: {zip_file}")
