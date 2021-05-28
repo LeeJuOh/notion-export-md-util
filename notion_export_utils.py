@@ -25,6 +25,8 @@ def init_path():
         os.chdir(application_path)
         logger.info(f"chdir: {application_path}")
         return application_path
+    else:
+        return os.getcwd()
 
 def search_zip_files(search_dir_path, zip_files_by_dir_path):
     global logger
@@ -49,16 +51,20 @@ def extract_zip_file_with_renaming(dir_path, zip_file, image_files_by_md_file):
 
     with zipfile.ZipFile(zip_file, 'r') as zip_obj:
         image_idx = 1
-        for full_filename in zip_obj.namelist():
-            file_name, ext = os.path.splitext(full_filename)
-            valid_file_name = file_name.split()[0]
+        for idx, full_filename in enumerate(zip_obj.namelist()):
+            if idx == 0:
+                file_name, ext = os.path.splitext(full_filename)
+                valid_file_name = file_name.split()[0]
+
             if ext == '.md':
                 save_path = f"{os.path.join(dir_path, valid_file_name)}{ext}"
                 image_files_by_md_file.setdefault(save_path, [])
-            else:
+            elif ext in ('.png', '.jpeg', '.jpg'):
                 save_path = f"{os.path.join(image_dir_path, valid_file_name)}_{image_idx}{ext}"
                 image_files_by_md_file[f"{os.path.join(dir_path, valid_file_name)}.md"].append(save_path)
                 image_idx += 1
+            else:
+                continue
             with open(save_path, "wb") as f:
                 f.write(zip_obj.read(full_filename))
                 logger.info(f"extract path: {save_path}")
@@ -96,9 +102,8 @@ def update_image_path(md_file, image_files):
 if __name__ == '__main__':
     logger = create_looger()
     logger.info("start")
-    root_dir = init_path()
-    search_dir_path = os.path.join(root_dir, os.environ.get('CS_DIR'))
-    image_dir_path = os.path.join(search_dir_path, os.environ.get('CS_IMAGE_DIR'))
+    search_dir_path = init_path()
+    image_dir_path = os.path.join(search_dir_path, 'image')
     zip_files_by_dir_path = defaultdict(list)
     image_files_by_md_file = defaultdict(list)
     logger.info(f"search dir: {search_dir_path}")
