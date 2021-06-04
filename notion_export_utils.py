@@ -54,8 +54,7 @@ def extract_zip_file_with_renaming(dir_path, zip_file, image_files_by_md_file):
         for idx, full_filename in enumerate(zip_obj.namelist()):
             file_name, ext = os.path.splitext(full_filename)
             if idx == 0:
-                print(file_name.split())
-                valid_file_name = ''.join(file_name.split()[:-1])
+                valid_file_name = '_'.join(file_name.split()[:-1])
 
             if ext == '.md':
                 save_path = f"{os.path.join(dir_path, valid_file_name)}{ext}"
