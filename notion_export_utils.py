@@ -88,8 +88,8 @@ def update_image_path(md_file, image_files):
         lines = []
         for line in f:
             if line.lstrip().startswith('!'):
-                image_path = image_files.pop(0).replace(search_dir_path, '..')
-                new_line = f'![image_{idx}]({image_path})\n'
+                # image_path = image_files.pop(0).replace(search_dir_path, '..')
+                new_line = f'![image_{idx}]({image_files.pop(0)})\n'
                 logger.info(f"update image url: {new_line[:-1]}")
                 lines = lines + [new_line]
             else:
