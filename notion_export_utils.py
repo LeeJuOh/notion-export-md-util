@@ -61,10 +61,10 @@ def extract_zip_file_with_renaming(path: str, zip_file: str, image_files: Dict[s
                 create_directory(image_path)
 
             if ext == '.md':
-                save_path = f"{os.path.join(path, save_file_name)}{ext}"
+                save_path = os.path.join(path, save_file_name + ext)
             elif ext in ('.png', '.jpeg', '.jpg'):
-                save_path = f"{os.path.join(image_path, str(image_idx))}{ext}"
-                image_files[f"{os.path.join(path, save_file_name)}.md"].append(save_path)
+                save_path = os.path.join(image_path, str(image_idx) + ext)
+                image_files[f"{os.path.join(path, save_file_name)}.md"].append(os.path.join("./image", str(image_idx) + ext))
                 image_idx += 1
             else:
                 continue
@@ -123,7 +123,7 @@ if __name__ == '__main__':
     image_files = defaultdict(list)
     logger.info(f"find dir: {search_dir_path}")
 
-    find_zip_files("./test", zip_files)
+    find_zip_files(search_dir_path, zip_files)
     print(zip_files)
     for path, zip_files in zip_files.items():
         for zip_file in zip_files:
