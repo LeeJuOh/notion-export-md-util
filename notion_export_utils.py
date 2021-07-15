@@ -29,6 +29,7 @@ def init_path() -> str:
     else:
         return os.getcwd()
 
+
 def find_zip_files(dir: str, zip_files: Dict[str, List[str]]) -> None:
     global logger
 
@@ -47,12 +48,14 @@ def find_zip_files(dir: str, zip_files: Dict[str, List[str]]) -> None:
         logger.error(e)
 
 
-def extract_zip_file_with_renaming(path: str, zip_file: str, image_files: Dict[str, List[str]]) -> None:
+def extract_zip_file_with_renaming(
+    path: str, zip_file: str,
+    image_files: Dict[str, List[str]]
+) -> None:
     global logger
 
     with zipfile.ZipFile(zip_file, 'r') as zip_obj:
         image_idx = 1
-        files = []
         for idx, full_filename in enumerate(zip_obj.namelist()):
             file_name, ext = os.path.splitext(full_filename)
             if idx == 0:
@@ -85,7 +88,7 @@ def create_directory(path: str) -> None:
         logger.error(f"Error: Creating directory. {path}")
 
 
-def remove_zip_file(zip_file):
+def remove_zip_file(zip_file: str) -> None:
     global logger
 
     if os.path.isfile(zip_file):
@@ -112,7 +115,7 @@ def update_image_path(md_file: str, images: List[str]):
                 else:
                     lines = lines + [line]
         except IndexError as e:
-            logger.error(f"index error: {idx}, {line}")
+            logger.error(f"{e}: {idx}, {line}")
         f.seek(0)               # file pointer 위치를 처음으로 돌림
         f.writelines(lines)     # 수정한 lines를 파일에 다시 씀
         f.truncate()
