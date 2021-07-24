@@ -122,8 +122,7 @@ def update_image_path(md_file: str, images: List[str]):
 if __name__ == '__main__':
     logger = create_looger()
     logger.info("start")
-    # search_dir_path = init_path()
-    search_dir_path = './test'
+    search_dir_path = init_path()
     zip_files = defaultdict(list)
     image_files = defaultdict(list)
     logger.info(f"find dir: {search_dir_path}")
