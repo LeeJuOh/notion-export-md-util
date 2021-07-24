@@ -21,7 +21,7 @@
     - ready: the process is waiting to be assigned to a processor.
     - terminated: the process has finished execution.
 
-![image_1](./zipname/1.png)
+![image_1](./name/name_1.png)
 
 ### **프로세스 제어 블록(Process Control Block, PCB) or TCB**
 

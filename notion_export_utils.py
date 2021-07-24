@@ -56,25 +56,23 @@ def extract_zip_file_with_renaming(
 
     with zipfile.ZipFile(zip_file, 'r') as zip_obj:
         image_idx = 1
-        image_path = os.path.splitext(zip_obj.filename)[0]
-        create_directory(image_path)
-        for idx, full_filename in enumerate(zip_obj.namelist()):
-            file_name, ext = os.path.splitext(full_filename)
-            if idx == 0:
-                save_file_name = '_'.join(file_name.split()[:-1])
-
+        save_directory = os.path.splitext(zip_obj.filename)[0]
+        save_filename = save_directory.split(path + '/')[1]
+        create_directory(save_directory)
+        for full_filename in zip_obj.namelist():
+            ext = os.path.splitext(full_filename)[1]
             if ext == '.md':
-                save_path = os.path.join(path, save_file_name + ext)
+                save_path = os.path.join(path, save_directory + ext)
             elif ext in ('.png', '.jpeg', '.jpg'):
-                save_path = os.path.join(image_path, str(image_idx) + ext)
-                md_file = f"{os.path.join(path, save_file_name)}.md"
-                image_files[md_file].append(save_path)
+                save_path = os.path.join(save_directory, f'{save_filename}_{image_idx}{ext}')
+                md_file = f"{os.path.join(path, save_directory)}.md"
+                image_files[md_file].append('.' + save_path.split(path)[1])
                 image_idx += 1
             else:
                 continue
             with open(save_path, "wb") as f:
                 f.write(zip_obj.read(full_filename))
-                logger.info(f"extract path: {save_path}")
+                logger.info(f"extract to: {save_path}")
 
 
 def create_directory(path: str) -> None:
@@ -105,8 +103,7 @@ def update_image_path(md_file: str, images: List[str]):
         try:
             for line in f:
                 if line.lstrip().startswith('!['):
-                    image_path = images[idx].replace(search_dir_path, '.')
-                    new_line = f'![image_{idx + 1}]({image_path})\n'
+                    new_line = f'![image_{idx + 1}]({images[idx]})\n'
                     logger.info(f"update image url: {new_line[:-1]}")
                     lines = lines + [new_line]
                     idx += 1
