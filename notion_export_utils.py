@@ -4,6 +4,7 @@ import sys
 from typing import Dict, List
 import zipfile
 from collections import defaultdict
+import chardet
 
 
 def create_looger() -> logging.Logger:
@@ -101,11 +102,12 @@ def remove_zip_file(zip_file: str) -> None:
 def update_image_path(md_file: str, images: List[str]):
     global logger, search_dir_path
 
-    with open(md_file, 'r+') as f:
+    with open(md_file, 'r+', encoding="utf-8") as f:
         idx = 0
         lines = []
         try:
             for line in f:
+                logger.info(f"utf: {chardet.detect(line.encode())}, {line}")
                 if line.lstrip().startswith('!['):
                     image_path = images[idx].replace(search_dir_path, '..')
                     new_line = f'![image_{idx + 1}]({image_path})\n'
@@ -124,7 +126,8 @@ def update_image_path(md_file: str, images: List[str]):
 if __name__ == '__main__':
     logger = create_looger()
     logger.info("start")
-    search_dir_path = init_path()
+    # search_dir_path = init_path()
+    search_dir_path = './test'
     zip_files = defaultdict(list)
     image_files = defaultdict(list)
     logger.info(f"find dir: {search_dir_path}")
@@ -137,7 +140,7 @@ if __name__ == '__main__':
                 zip_file,
                 image_files
             )
-            remove_zip_file(zip_file)
+            # remove_zip_file(zip_file)
     for md_file, images in image_files.items():
         update_image_path(md_file, images)
     logger.info("finish")
