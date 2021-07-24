@@ -1,10 +1,9 @@
 import logging
 import os
 import sys
-from typing import Dict, List
 import zipfile
 from collections import defaultdict
-import chardet
+from typing import Dict, List
 
 
 def create_looger() -> logging.Logger:
@@ -57,21 +56,19 @@ def extract_zip_file_with_renaming(
 
     with zipfile.ZipFile(zip_file, 'r') as zip_obj:
         image_idx = 1
+        image_path = os.path.splitext(zip_obj.filename)[0]
+        create_directory(image_path)
         for idx, full_filename in enumerate(zip_obj.namelist()):
             file_name, ext = os.path.splitext(full_filename)
             if idx == 0:
                 save_file_name = '_'.join(file_name.split()[:-1])
-                image_path = os.path.join(path, save_file_name)
-                create_directory(image_path)
 
             if ext == '.md':
                 save_path = os.path.join(path, save_file_name + ext)
             elif ext in ('.png', '.jpeg', '.jpg'):
                 save_path = os.path.join(image_path, str(image_idx) + ext)
                 md_file = f"{os.path.join(path, save_file_name)}.md"
-                image_files[md_file].append(
-                    os.path.join(f"./{save_file_name}", str(image_idx) + ext)
-                )
+                image_files[md_file].append(save_path)
                 image_idx += 1
             else:
                 continue
@@ -107,9 +104,8 @@ def update_image_path(md_file: str, images: List[str]):
         lines = []
         try:
             for line in f:
-                logger.info(f"utf: {chardet.detect(line.encode())}, {line}")
                 if line.lstrip().startswith('!['):
-                    image_path = images[idx].replace(search_dir_path, '..')
+                    image_path = images[idx].replace(search_dir_path, '.')
                     new_line = f'![image_{idx + 1}]({image_path})\n'
                     logger.info(f"update image url: {new_line[:-1]}")
                     lines = lines + [new_line]
@@ -140,7 +136,7 @@ if __name__ == '__main__':
                 zip_file,
                 image_files
             )
-            # remove_zip_file(zip_file)
+            remove_zip_file(zip_file)
     for md_file, images in image_files.items():
         update_image_path(md_file, images)
     logger.info("finish")
